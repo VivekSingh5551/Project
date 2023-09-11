@@ -1,0 +1,90 @@
+from mysql.connector import connect
+conn=connect(host="localhost", user="root", password="root",database="employee")
+
+print("-------------------------------------------------")
+print("         Employee Information system    ")
+print("--------------------------------------------------")
+print()
+print("1. Add Record")
+print("2. Update Record")
+print("3. Delete Record")
+print("4. Find Record")
+print("5. Find All Records")
+print()
+cho=int(input("Enter your choice :"))
+if (cho==1) :
+    sql="insert into emp values(%s,%s,%s,%s)"
+    list=[]
+    while True :
+        empid=int(input("Enter your Employee ID :"))
+        empname=input("Enter your Employee Name:")
+        empdp=input("Enter your Employee department:")
+        empsl=int(input("Enter your Employee salary :"))
+        val=(empid,empname,empdp,empsl)
+        list.append(val)
+        check=input("if you want further insert then press 'y' otherwise 'n' :")
+        if check=='n' :
+            break
+    curr=conn.cursor()
+    curr.executemany(sql, list)
+    conn.commit()
+    print(curr.rowcount,"data inserted")
+elif(cho==2) :
+    list=[]
+    while True :
+
+        update=input("what you want to update empname,empdp,empsl:")
+
+        ID=int(input("enter employee ID you want to change"))
+        if(update=='empname'):
+            sql="update emp set empname=%s where empid=%s "
+            empname = input("Enter name")
+            val=(empname,ID)
+        elif(update=='empdp'):
+            sql="update emp set empdp=%s where empid=%s"
+            empdp = input("enter department")
+            val=(empdp,ID)
+        elif(update=='empsl') :
+            sql="update emp set empsl=%s where empid=%s"
+            empsl = int(input("Enter new salary"))
+            val=(empsl,ID)
+            list.append(val)
+            check=input("if you want further insert then press 'y' otherwise 'n' :")
+            if (check=='n'):
+                break
+    curr=conn.cursor()
+    curr.executemany(sql, list)
+    conn.commit()
+    print("update data")
+elif(cho==3) :
+    list=[]
+    while True:
+        ID= int(input("Enter emplid you want to delete :"))
+        sql = "delete from emp where empid=%s"
+        val=(ID,)
+        list.append(val)
+        check = input("if you want further insert then press 'y' otherwise 'n' :")
+        if (check == 'n'):
+            break
+    curr=conn.cursor()
+    curr.executemany(sql, list)
+    conn.commit()
+    print(curr.rowcount,"Record deleted")
+elif(cho==4):
+    ID=int(input("enter employee ID want to find"))
+    sql= "select * from emp where empid=%s"
+    val=(ID,)
+    cursor = conn.cursor()
+    cursor.execute(sql,val)
+    rs = cursor.fetchmany(5)
+    print(rs)
+    cursor.close()
+    conn.close()
+elif(cho==5):
+    sql= "select * from emp "
+cursor = conn.cursor()
+cursor.execute(sql)
+rs = cursor.fetchall()
+print(rs)
+cursor.close()
+conn.close()
